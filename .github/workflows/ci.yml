@@ -19,5 +19,15 @@ jobs:
             -scheme ReddSaveMedia \
             -configuration Release \
             -sdk iphoneos \
+            -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             build
+          mkdir -p artifact/Payload
+          cp -R build/Build/Products/Release-iphoneos/ReddSaveMedia.app artifact/Payload/
+          (cd artifact && zip -qry ReddSaveMedia.ipa Payload)
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReddSaveMedia-unsigned-ipa
+          path: artifact/ReddSaveMedia.ipa
+          if-no-files-found: error
