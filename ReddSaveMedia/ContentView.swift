@@ -10,7 +10,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Profil public") {
+                Section {
                     Text("Aucune connexion, aucun cookie et aucune API Reddit ne sont utilisés.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
@@ -23,6 +23,8 @@ struct ContentView: View {
                         if isLoading { ProgressView() } else { Label("Analyser les médias publics", systemImage: "magnifyingglass") }
                     }
                     .disabled(isLoading || username.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                } header: {
+                    Text("Profil public")
                 } footer: {
                     Text("Les contenus privés, supprimés, sauvegardés ou réservés à un compte ne sont pas accessibles.")
                 }
