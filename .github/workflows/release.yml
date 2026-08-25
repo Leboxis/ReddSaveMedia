@@ -1,0 +1,57 @@
+name: Release IPA and source
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build an unsigned IPA
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          VERSION="${VERSION#v}"
+          xcodebuild \
+            -project ReddSaveMedia.xcodeproj \
+            -scheme ReddSaveMedia \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="${GITHUB_RUN_NUMBER}" \
+            build
+          mkdir -p release/Payload
+          cp -R build/Build/Products/Release-iphoneos/ReddSaveMedia.app release/Payload/
+          (cd release && zip -qry ReddSaveMedia.ipa Payload)
+      - name: Generate source JSON
+        env:
+          VERSION: ${{ github.ref_name }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          VERSION="${VERSION#v}"
+          IPA_SIZE="$(stat -f%z release/ReddSaveMedia.ipa)"
+          IPA_SHA256="$(shasum -a 256 release/ReddSaveMedia.ipa | awk '{print $1}')"
+          jq --arg repo "$REPOSITORY" --arg version "$VERSION" --arg sha "$IPA_SHA256" --argjson size "$IPA_SIZE" '
+            .identifier = ("io.github." + ($repo | split("/")[0]) + ".reddsavemedia") |
+            .sourceURL = ("https://github.com/" + $repo + "/releases/latest/download/repo.json") |
+            .iconURL = ("https://raw.githubusercontent.com/" + $repo + "/main/ReddSaveMedia/Assets/source-icon.svg") |
+            .apps[0].iconURL = .iconURL |
+            .apps[0].versions[0].version = $version |
+            .apps[0].versions[0].buildVersion = env.GITHUB_RUN_NUMBER |
+            .apps[0].versions[0].date = (now | strftime("%Y-%m-%d")) |
+            .apps[0].versions[0].downloadURL = ("https://github.com/" + $repo + "/releases/latest/download/ReddSaveMedia.ipa") |
+            .apps[0].versions[0].size = $size |
+            .apps[0].versions[0].sha256 = $sha
+          ' repo.json > release/repo.json
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" release/ReddSaveMedia.ipa release/repo.json --title "$TAG" --generate-notes
