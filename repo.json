@@ -1,0 +1,35 @@
+{
+  "name": "ReddSave Media",
+  "identifier": "io.github.Leboxis.reddsavemedia",
+  "sourceURL": "https://github.com/Leboxis/ReddSaveMedia/releases/latest/download/repo.json",
+  "subtitle": "Médias de profils Reddit publics",
+  "description": "Source de ReddSave Media : téléchargement de médias exposés sur des pages Reddit publiques, sans connexion ni API.",
+  "iconURL": "https://raw.githubusercontent.com/Leboxis/ReddSaveMedia/main/ReddSaveMedia/Assets/source-icon.svg",
+  "apps": [
+    {
+      "name": "ReddSave Media",
+      "bundleIdentifier": "io.github.reddsavemedia",
+      "developerName": "Your Name",
+      "subtitle": "Médias de profils Reddit publics",
+      "localizedDescription": "Télécharge les images et vidéos exposées par les pages publiques d’un profil Reddit. Sans API, connexion, cookie ou jeton.",
+      "iconURL": "https://raw.githubusercontent.com/Leboxis/ReddSaveMedia/main/ReddSaveMedia/Assets/source-icon.svg",
+      "tintColor": "#FF4500",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "buildVersion": "1",
+          "date": "2026-08-25",
+          "localizedDescription": "Première version.",
+          "downloadURL": "https://github.com/Leboxis/ReddSaveMedia/releases/latest/download/ReddSaveMedia.ipa",
+          "size": 0,
+          "minOSVersion": "17.0"
+        }
+      ],
+      "appPermissions": {
+        "entitlements": [],
+        "privacy": {}
+      }
+    }
+  ],
+  "news": []
+}
