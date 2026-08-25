@@ -1,0 +1,23 @@
+name: iOS CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate repository source
+        run: jq empty repo.json
+      - name: Build unsigned app
+        run: |
+          xcodebuild \
+            -project ReddSaveMedia.xcodeproj \
+            -scheme ReddSaveMedia \
+            -configuration Release \
+            -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            build
